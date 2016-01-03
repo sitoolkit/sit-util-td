@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.sitoolkit.core.infra.repository.schema.ReplacePattern;
+import org.sitoolkit.util.tabledata.schema.ReplacePattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

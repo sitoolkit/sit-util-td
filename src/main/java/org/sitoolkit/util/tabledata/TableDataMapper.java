@@ -27,9 +27,9 @@ import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.sitoolkit.core.infra.repository.schema.Column;
-import org.sitoolkit.core.infra.repository.schema.Document;
-import org.sitoolkit.core.infra.repository.schema.Table;
+import org.sitoolkit.util.tabledata.schema.Column;
+import org.sitoolkit.util.tabledata.schema.Mapping;
+import org.sitoolkit.util.tabledata.schema.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author yuichi.kuwahara
  */
-public class DocumentMapper {
+public class TableDataMapper {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -160,9 +160,9 @@ public class DocumentMapper {
     @PostConstruct
     public void init() {
         log.info("設計書定義を読み込みます。");
-        Document doc = JaxbUtils.res2obj(Document.class, getConfigFilePath());
+        Mapping mapping = JaxbUtils.res2obj(Mapping.class, getConfigFilePath());
 
-        for (Table table : doc.getTable()) {
+        for (Table table : mapping.getTable()) {
             for (String id : table.getBeanId().split(",")) {
                 tableMap.put(id, table);
             }

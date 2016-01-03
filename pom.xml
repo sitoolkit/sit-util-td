@@ -130,7 +130,7 @@
           </execution>
         </executions>
         <configuration>
-          <packageName>org.sitoolkit.core.infra.repository.schema</packageName>
+          <packageName>org.sitoolkit.util.tabledata.schema</packageName>
         </configuration>
       </plugin>
     </plugins>

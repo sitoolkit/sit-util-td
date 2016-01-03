@@ -22,27 +22,22 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sitoolkit.core.infra.repository.schema.Column;
-import org.sitoolkit.core.infra.repository.schema.ReplacePattern;
-import org.sitoolkit.util.tabledata.DocumentMapper;
-import org.sitoolkit.util.tabledata.KeyValuePair;
-import org.sitoolkit.util.tabledata.KeyValuePairMap;
-import org.sitoolkit.util.tabledata.RowData;
-import org.sitoolkit.util.tabledata.StringLoadableConverter;
+import org.sitoolkit.util.tabledata.schema.Column;
+import org.sitoolkit.util.tabledata.schema.ReplacePattern;
 
 /**
  *
  * @author yuichi.kuwahara
  */
-public class DocumentMapperTest {
+public class TableDataMapperTest {
 
-    DocumentMapper dm = new DocumentMapper();
+    TableDataMapper tdm = new TableDataMapper();
 
     @Before
     public void before() {
-        dm.getConverterMap().put(KeyValuePair.class, new StringLoadableConverter());
-        dm.getConverterMap().put(KeyValuePairMap.class, new StringLoadableConverter());
-        dm.initConverters();
+        tdm.getConverterMap().put(KeyValuePair.class, new StringLoadableConverter());
+        tdm.getConverterMap().put(KeyValuePairMap.class, new StringLoadableConverter());
+        tdm.initConverters();
     }
 
     /**
@@ -59,7 +54,7 @@ public class DocumentMapperTest {
         column.setName("文字列");
 
         TestBean bean = new TestBean();
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
 
         assertEquals("str(3文字)", bean.getStrVal());
 
@@ -68,7 +63,7 @@ public class DocumentMapperTest {
         replace.setReplacement("");
         column.getReplace().add(replace);
 
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
 
         assertEquals("str", bean.getStrVal());
     }
@@ -87,7 +82,7 @@ public class DocumentMapperTest {
         column.setName("整数");
 
         TestBean bean = new TestBean();
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
 
         assertEquals(100, bean.getIntVal());
     }
@@ -109,7 +104,7 @@ public class DocumentMapperTest {
         column.setPattern("階層[0-9]");
 
         TestBean bean = new TestBean();
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
 
         assertEquals("a", bean.getListVal().get(0));
         assertEquals("b", bean.getListVal().get(1));
@@ -130,7 +125,7 @@ public class DocumentMapperTest {
         column.setName("マップ");
 
         TestBean bean = new TestBean();
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
 
         assertEquals("key1", bean.getKvmVal().get("key1").getKey());
         assertEquals("val1", bean.getKvmVal().get("key1").getValue());
@@ -155,7 +150,7 @@ public class DocumentMapperTest {
         column.setPattern("ケース_([0-9]*)");
 
         TestBean bean = new TestBean();
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
 
         assertEquals("a(1文字)", bean.getMapVal().get("001"));
         assertEquals("b", bean.getMapVal().get("002"));
@@ -166,7 +161,7 @@ public class DocumentMapperTest {
         replace.setReplacement("");
         column.getReplace().add(replace);
 
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
 
         assertEquals("a", bean.getMapVal().get("001"));
     }
@@ -188,12 +183,12 @@ public class DocumentMapperTest {
         RowData rowData = new RowData(column.getName(), "はい");
 
         TestBean bean = new TestBean();
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
         assertEquals(true, bean.isBooleanVal());
 
         rowData.setCellValue(column.getName(), "いいえ");
 
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
         assertEquals(false, bean.isBooleanVal());
     }
 
@@ -222,11 +217,11 @@ public class DocumentMapperTest {
         RowData rowData = new RowData(column.getName(), "はい");
 
         TestBean bean = new TestBean();
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
         assertEquals(1, bean.getIntVal());
 
         rowData.setCellValue(column.getName(), "いいえ");
-        dm.map(bean, column, rowData);
+        tdm.map(bean, column, rowData);
         assertEquals(0, bean.getIntVal());
 
     }
