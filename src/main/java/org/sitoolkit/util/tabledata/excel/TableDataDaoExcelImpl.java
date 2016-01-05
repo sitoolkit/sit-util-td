@@ -9,8 +9,8 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.sitoolkit.util.tabledata.FileInputSourceWatcher;
 import org.sitoolkit.util.tabledata.FileOverwriteChecker;
+import org.sitoolkit.util.tabledata.InputSourceWatcher;
 import org.sitoolkit.util.tabledata.TableData;
 import org.sitoolkit.util.tabledata.TableDataCatalog;
 import org.sitoolkit.util.tabledata.TableDataDao;
@@ -32,7 +32,7 @@ public class TableDataDaoExcelImpl implements TableDataDao {
 
     private FileOverwriteChecker fileOverwriteChecker;
 
-    private FileInputSourceWatcher watcher;
+    private InputSourceWatcher inputSourceWatcher;
 
     @Override
     public TableData read(String path, String name) {
@@ -53,7 +53,7 @@ public class TableDataDaoExcelImpl implements TableDataDao {
         for (TableData table : catalog.tables()) {
             table.setInputSource(filePath);
         }
-        watcher.watch(filePath);
+        inputSourceWatcher.watch(filePath);
 
         return catalog;
     }
@@ -122,6 +122,22 @@ public class TableDataDaoExcelImpl implements TableDataDao {
                 }
             }
         }
+    }
+
+    public FileOverwriteChecker getFileOverwriteChecker() {
+        return fileOverwriteChecker;
+    }
+
+    public void setFileOverwriteChecker(FileOverwriteChecker fileOverwriteChecker) {
+        this.fileOverwriteChecker = fileOverwriteChecker;
+    }
+
+    public InputSourceWatcher getInputSourceWatcher() {
+        return inputSourceWatcher;
+    }
+
+    public void setInputSourceWatcher(InputSourceWatcher inputSourceWatcher) {
+        this.inputSourceWatcher = inputSourceWatcher;
     }
 
 }
