@@ -53,7 +53,7 @@ public class TableDataMapper {
     /**
      * 設定ファイルのパス
      */
-    private String configFilePath = "/documentMapping.xml";
+    private String configFilePath = "/tabledata-mapping.xml";
 
     private BeanFactory beanFactory;
 
