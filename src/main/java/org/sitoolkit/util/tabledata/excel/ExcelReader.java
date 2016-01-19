@@ -72,6 +72,9 @@ public class ExcelReader {
         final int rowCnt = sheet.getLastRowNum();
         for (int i = headerRow.getRowNum() + 1; i <= rowCnt; i++) {
             Row row = sheet.getRow(i);
+            if (row == null) {
+                break;
+            }
             tableData.add(readRow(schema, row));
         }
         LOG.info("シート[{}]内の表データを{}行読み込みました。", sheet.getSheetName(), tableData.getRowCount());
