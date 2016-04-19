@@ -140,4 +140,9 @@ public class TableDataDaoExcelImpl implements TableDataDao {
         this.inputSourceWatcher = inputSourceWatcher;
     }
 
+	@Override
+	public TableData read(File file) {
+		return null;
+	}
+
 }
