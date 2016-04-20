@@ -16,7 +16,9 @@
 package org.sitoolkit.util.tabledata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,6 +39,9 @@ import org.slf4j.LoggerFactory;
 public class RowData {
 
     private static final Logger LOG = LoggerFactory.getLogger(RowData.class);
+    private static final String rgxDbl = "\"";
+    private static final String rgxDblOrCom = "\"|,|\n";
+
     private Map<String, String> data = new LinkedHashMap<String, String>();
 
     public RowData() {
@@ -171,7 +176,35 @@ public class RowData {
 
     @Override
     public String toString() {
-        return StringUtils.join(getData().values(), ",");
+
+        Collection<String> cols = getData().values();
+        Collection<String> revisedCols = new LinkedList<String>();
+
+        for (String col : cols) {
+
+            Pattern fstP = Pattern.compile(rgxDbl);
+            Matcher fstM = fstP.matcher(col);
+
+            if (fstM.find()) {
+                // 文字列内の「"」を「""」に置換する。
+                col = col.replace("\"", "\"\"");
+            }
+
+            Pattern secP = Pattern.compile(rgxDblOrCom);
+            Matcher secM = secP.matcher(col);
+
+            if (secM.find()) {
+                StringBuilder bld = new StringBuilder();
+                bld.append("\"");
+                bld.append(col);
+                bld.append("\"");
+                col = bld.toString();
+            }
+
+            revisedCols.add(col);
+
+        }
+        return StringUtils.join(revisedCols, ",");
     }
 
     @Override

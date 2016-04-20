@@ -19,21 +19,21 @@ public class CsvReader {
     private static final Logger LOG = LoggerFactory.getLogger(CsvReader.class);
 
     public TableData readCsv(File file) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("CSVファイルを読み込みます。");
-        }
+
+        LOG.info("CSVファイルを読み込みます。");
 
         List<String> allLines = new ArrayList<String>();
         try {
-        	// csvファイルの読み込み
+            // csvファイルの読み込み
             String allLine = FileUtils.readFileToString(file, "MS932");
 
             // 改行コードでsplitしリストに格納
-            for(String line : allLine.split("\r\n")){
-            	allLines.add(line);
+            for (String line : allLine.split("\r\n")) {
+                allLines.add(line);
             }
 
         } catch (IOException e) {
+            LOG.warn("CSVファイルの読み込みに失敗しました。", e);
         }
 
         TableData tableData = new TableData();
@@ -41,13 +41,13 @@ public class CsvReader {
         //データヘッダをリストから除外し、schemaに設定
         Map<String, Integer> schema = retriveSchema(allLines.remove(0));
 
-        for(String line : allLines){
-        	tableData.add(readRow(schema,line));
+        for (String line : allLines) {
+            tableData.add(readRow(schema,line));
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("CSVファイルを読み込みました。");
-        }
+
+        LOG.info("CSVファイルのデータを{}行読み込みました。", tableData.getRowCount());
+
         return tableData;
     }
 
@@ -56,7 +56,7 @@ public class CsvReader {
         List<String> cells = CsvIOUtils.splitLine(headRowData, 0);
         int i = 0;
         for (String cell : cells) {
-        	i++;
+            i++;
             schema.put(cell, i);
         }
         return schema;

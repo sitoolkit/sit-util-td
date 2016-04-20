@@ -16,7 +16,7 @@ import org.sitoolkit.util.tabledata.TableData;
 public class TableDataDaoCsvImplTest {
 
     @Test
-    public void test() {
+    public void readTest() {
         TableDataDaoCsvImpl dao = new TableDataDaoCsvImpl();
         dao.setFileOverwriteChecker(new FileOverwriteChecker());
         dao.setInputSourceWatcher(new FileInputSourceWatcher());
