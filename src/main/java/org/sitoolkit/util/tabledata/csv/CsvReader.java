@@ -25,10 +25,10 @@ public class CsvReader {
         List<String> allLines = new ArrayList<String>();
         try {
             // csvファイルの読み込み
-            String allLine = FileUtils.readFileToString(file, "MS932");
+            String allLine = FileUtils.readFileToString(file, CsvIOUtils.getFileEncoding());
 
             // 改行コードでsplitしリストに格納
-            for (String line : allLine.split("\r\n")) {
+            for (String line : allLine.split(CsvIOUtils.getLineSeparator())) {
                 allLines.add(line);
             }
 
@@ -39,11 +39,11 @@ public class CsvReader {
 
         TableData tableData = new TableData();
 
-        //データヘッダをリストから除外し、schemaに設定
+        // データヘッダをリストから除外し、schemaに設定
         Map<String, Integer> schema = retriveSchema(allLines.remove(0));
 
         for (String line : allLines) {
-            tableData.add(readRow(schema,line));
+            tableData.add(readRow(schema, line));
         }
 
         LOG.info("CSVファイルのデータを{}行読み込みました。", tableData.getRowCount());
@@ -74,12 +74,12 @@ public class CsvReader {
      */
     private RowData readRow(Map<String, Integer> schema, String rows) {
         RowData rowData = new RowData();
-        List<String> row = CsvIOUtils.splitLine(rows,schema.size());
+        List<String> row = CsvIOUtils.splitLine(rows, schema.size());
 
         int i = 0;
         for (Entry<String, Integer> entry : schema.entrySet()) {
             rowData.setCellValue(entry.getKey(), row.get(i));
-        	i++;
+            i++;
         }
 
         return rowData;

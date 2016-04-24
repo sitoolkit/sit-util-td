@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
 public class RowData {
 
     private static final Logger LOG = LoggerFactory.getLogger(RowData.class);
-    private static final String rgxDblQ = "\"";
-    private static final String rgxDblQorCma = "\"|,|\n";
 
     private Map<String, String> data = new LinkedHashMap<String, String>();
 
@@ -178,35 +176,23 @@ public class RowData {
     public String toString() {
 
         Collection<String> cols = getData().values();
-        Collection<String> revisedCols = new LinkedList<String>();
+        Collection<String> returnCols = new LinkedList<String>();
 
         for (String col : cols) {
 
-            Pattern fstP = Pattern.compile(rgxDblQ);
-            Matcher fstM = fstP.matcher(col);
-
-            if (fstM.find()) {
-                // 文字列内の「"」を「""」に置換する。
+            if (col.contains("\"")) {
                 col = col.replace("\"", "\"\"");
+                col = "\"" + col + "\"";
+            } else if (StringUtils.containsAny(col, ",", "\n")) {
+                col = "\"" + col + "\"";
             }
 
-            Pattern secP = Pattern.compile(rgxDblQorCma);
-            Matcher secM = secP.matcher(col);
-
-            if (secM.find()) {
-                // 文字列の最初と最後に「"」を追加する。
-                StringBuilder bld = new StringBuilder();
-                bld.append("\"");
-                bld.append(col);
-                bld.append("\"");
-                col = bld.toString();
-            }
-
-            revisedCols.add(col);
+            returnCols.add(col);
 
         }
 
-        return StringUtils.join(revisedCols, ",");
+        return StringUtils.join(returnCols, ",");
+
     }
 
     @Override

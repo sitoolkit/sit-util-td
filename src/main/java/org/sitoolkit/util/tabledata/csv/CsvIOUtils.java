@@ -12,6 +12,10 @@ class CsvIOUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(CsvIOUtils.class);
 
+    private static String fileEncoding = System.getProperty("file.encoding");
+
+    private static String lineSeparator = System.getProperty("line.separator");
+
     static String escapeReturn(Object obj) {
         if (obj == null) {
             return "";
@@ -29,14 +33,14 @@ class CsvIOUtils {
      *            分割数
      * @return 「,」(半角カンマ)または「\t」(タブ)で分割した文字配列
      */
-    static List<String> splitLine(String line,int columnsNum) {
+    static List<String> splitLine(String line, int columnsNum) {
         String[] values = line.split(",|\t");
 
         List<String> strList = Arrays.asList(values);
         List<String> newStrList = new ArrayList<String>();
         StringBuilder builder = null;
 
-        for (Iterator<String> itr = strList.iterator();itr.hasNext();) {
+        for (Iterator<String> itr = strList.iterator(); itr.hasNext();) {
 
             String startStr = itr.next();
 
@@ -57,12 +61,12 @@ class CsvIOUtils {
 
                 newStrList.add(modifyStr(builder.toString()));
 
-            }else{
+            } else {
                 newStrList.add(modifyStr(startStr));
             }
         }
         // 最終列から見て最初にデータが入力されているセルまでの空白のセルが「newStrList」にaddされていないため補完する。
-        if(newStrList.size() < columnsNum){
+        if (newStrList.size() < columnsNum) {
             do {
                 newStrList.add("");
             } while (newStrList.size() != columnsNum);
@@ -71,7 +75,7 @@ class CsvIOUtils {
         return newStrList;
     }
 
-    private static String modifyStr(String inStr){
+    private static String modifyStr(String inStr) {
         String retStr = inStr;
 
         // 文字列が「"」(半角ダブルクオーテーション)で開始かつ終了していた場合は、 前後の「"」を除く。
@@ -85,4 +89,21 @@ class CsvIOUtils {
 
         return retStr;
     }
+
+    public static String getFileEncoding() {
+        return fileEncoding;
+    }
+
+    public static void setFileEncoding(String fileEncoding) {
+        CsvIOUtils.fileEncoding = fileEncoding;
+    }
+
+    public static String getLineSeparator() {
+        return lineSeparator;
+    }
+
+    public static void setLineSeparator(String lineSeparator) {
+        CsvIOUtils.lineSeparator = lineSeparator;
+    }
+
 }

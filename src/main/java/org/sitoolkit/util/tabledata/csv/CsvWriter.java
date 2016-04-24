@@ -16,41 +16,42 @@ import org.slf4j.LoggerFactory;
 public class CsvWriter {
     private static final Logger LOG = LoggerFactory.getLogger(CsvWriter.class);
 
-    public void write(File targetFile, TableData tableData){
+    public void write(File targetFile, TableData tableData) {
 
         try {
-            FileUtils.writeLines(targetFile, "MS932", remakeTD(tableData));
+            FileUtils.writeLines(targetFile, CsvIOUtils.getFileEncoding(), mergeSchema(tableData));
         } catch (IOException e) {
             LOG.warn("CSVファイルの書き込みに失敗しました。");
             throw new IllegalStateException(e);
         }
     }
 
-    public Collection<RowData> remakeTD(TableData td){
+    Collection<RowData> mergeSchema(TableData td) {
         List<RowData> rows = (List<RowData>) td.getRows();
 
-    	List<RowData> remakedTD = new ArrayList<RowData>();
+        List<RowData> resultRows = new ArrayList<RowData>();
 
         RowData schemaRow = new RowData();
 
         // schemaをデータレコードに追加する。
-        for(RowData row : rows){
-        	for(String newKey : row.getData().keySet()){
+        for (RowData row : rows) {
+            for (String newKey : row.getData().keySet()) {
                 schemaRow.setCellValue(newKey, newKey);
-        	}
+            }
         }
-		remakedTD.add(schemaRow);
+        resultRows.add(schemaRow);
 
         // メソッドの引数のTableDataからデータを抽出し、新しいスキーマと一致する場合データをセットする。
-		// 新しいスキーマと一致しない場合は空文字をセットする。
-        for(RowData row : rows){
-        	RowData remakedTDRow = new RowData();
-        	for(String schemaCol : schemaRow.getData().values()){
-    			remakedTDRow.setCellValue(schemaCol, StringUtils.defaultString(row.getCellValue(schemaCol)));
-        	}
-        	remakedTD.add(remakedTDRow);
+        // 新しいスキーマと一致しない場合は空文字をセットする。
+        for (RowData row : rows) {
+            RowData resultRow = new RowData();
+            for (String schemaCol : schemaRow.getData().values()) {
+                resultRow.setCellValue(schemaCol,
+                        StringUtils.defaultString(row.getCellValue(schemaCol)));
+            }
+            resultRows.add(resultRow);
         }
 
-    	return remakedTD;
+        return resultRows;
     }
 }

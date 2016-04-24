@@ -8,7 +8,6 @@ import org.sitoolkit.util.tabledata.FileOverwriteChecker;
 import org.sitoolkit.util.tabledata.InputSourceWatcher;
 import org.sitoolkit.util.tabledata.TableData;
 import org.sitoolkit.util.tabledata.TableDataDao;
-import org.sitoolkit.util.tabledata.VoidFileOverwriteChecker;
 import org.sitoolkit.util.tabledata.excel.TableDataDaoExcelImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,19 +22,17 @@ public class TableDataDaoCsvImpl implements TableDataDao {
 
     private FileOverwriteChecker fileOverwriteChecker;
 
-    private VoidFileOverwriteChecker voidFileOverwriteChecker;
-
     private InputSourceWatcher inputSourceWatcher;
 
     @Override
     public TableData read(String path, String name) {
-		return null;
+        return read(new File(path));
     }
 
-	@Override
+    @Override
     public TableData read(File file) {
-    	TableData tableData = reader.readCsv(file);
-    	tableData.setInputSource(file.getAbsolutePath());
+        TableData tableData = reader.readCsv(file);
+        tableData.setInputSource(file.getAbsolutePath());
         inputSourceWatcher.watch(file.getAbsolutePath());
 
         return tableData;
@@ -43,19 +40,19 @@ public class TableDataDaoCsvImpl implements TableDataDao {
 
     @Override
     public void write(TableData data, String templatePath, String targetPath, String name) {
-    	write(data ,new File(targetPath));
+        write(data, new File(targetPath));
     }
 
     public void write(TableData data, File targetFile) {
-        if (!voidFileOverwriteChecker.isWritable(targetFile)) {
+        if (!fileOverwriteChecker.isWritable(targetFile)) {
             return;
         }
-        LOG.info("Csvファイルに書き込みます。{}", targetFile.getAbsolutePath());
+        LOG.info("CSVファイルに書き込みます。{}", targetFile.getAbsolutePath());
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(targetFile);
-        	writer.write(targetFile, data);
-            LOG.debug("Csvファイルに書き込みました。");
+            writer.write(targetFile, data);
+            LOG.debug("CSVファイルに書き込みました。");
         } catch (IOException e) {
             throw new IllegalStateException(e);
         } finally {
@@ -78,22 +75,12 @@ public class TableDataDaoCsvImpl implements TableDataDao {
         this.fileOverwriteChecker = fileOverwriteChecker;
     }
 
-    public VoidFileOverwriteChecker getVoidFileOverwriteChecker() {
-		return voidFileOverwriteChecker;
-	}
-
-	public void setVoidFileOverwriteChecker(
-			VoidFileOverwriteChecker voidFileOverwriteChecker) {
-		this.voidFileOverwriteChecker = voidFileOverwriteChecker;
-	}
-
-	public InputSourceWatcher getInputSourceWatcher() {
+    public InputSourceWatcher getInputSourceWatcher() {
         return inputSourceWatcher;
     }
 
     public void setInputSourceWatcher(InputSourceWatcher inputSourceWatcher) {
         this.inputSourceWatcher = inputSourceWatcher;
     }
-
 
 }

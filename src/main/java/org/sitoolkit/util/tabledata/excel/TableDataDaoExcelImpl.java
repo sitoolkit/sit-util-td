@@ -14,7 +14,6 @@ import org.sitoolkit.util.tabledata.InputSourceWatcher;
 import org.sitoolkit.util.tabledata.TableData;
 import org.sitoolkit.util.tabledata.TableDataCatalog;
 import org.sitoolkit.util.tabledata.TableDataDao;
-import org.sitoolkit.util.tabledata.VoidFileOverwriteChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +31,6 @@ public class TableDataDaoExcelImpl implements TableDataDao {
     private Set<String> excludingSheetNames = new HashSet<>();
 
     private FileOverwriteChecker fileOverwriteChecker;
-    
-    private VoidFileOverwriteChecker voidFileOverwriteChecker;    
 
     private InputSourceWatcher inputSourceWatcher;
 
@@ -105,7 +102,7 @@ public class TableDataDaoExcelImpl implements TableDataDao {
     }
 
     public void write(String templateFile, File targetFile, TableDataCatalog catalog) {
-        if (!voidFileOverwriteChecker.isWritable(targetFile)) {
+        if (!fileOverwriteChecker.isWritable(targetFile)) {
             return;
         }
         LOG.info("Excelファイルに書き込みます。{}", targetFile.getAbsolutePath());
@@ -143,17 +140,9 @@ public class TableDataDaoExcelImpl implements TableDataDao {
         this.inputSourceWatcher = inputSourceWatcher;
     }
 
-	public VoidFileOverwriteChecker getVoidFileOverwriteChecker() {
-		return voidFileOverwriteChecker;
-	}
-
-	public void setVoidFileOverwriteChecker(VoidFileOverwriteChecker voidFileOverwriteChecker) {
-		this.voidFileOverwriteChecker = voidFileOverwriteChecker;
-	}
-
-	@Override
-	public TableData read(File file) {
-		return null;
-	}
+    @Override
+    public TableData read(File file) {
+        return null;
+    }
 
 }
