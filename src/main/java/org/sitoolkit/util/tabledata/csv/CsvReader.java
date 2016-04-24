@@ -33,7 +33,8 @@ public class CsvReader {
             }
 
         } catch (IOException e) {
-            LOG.warn("CSVファイルの読み込みに失敗しました。", e);
+            LOG.warn("CSVファイルの読み込みに失敗しました。");
+            throw new IllegalStateException(e);
         }
 
         TableData tableData = new TableData();
@@ -44,7 +45,6 @@ public class CsvReader {
         for (String line : allLines) {
             tableData.add(readRow(schema,line));
         }
-
 
         LOG.info("CSVファイルのデータを{}行読み込みました。", tableData.getRowCount());
 

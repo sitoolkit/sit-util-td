@@ -4,9 +4,9 @@ import java.io.File;
 
 import org.junit.Test;
 import org.sitoolkit.util.tabledata.FileInputSourceWatcher;
-import org.sitoolkit.util.tabledata.FileOverwriteChecker;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
+import org.sitoolkit.util.tabledata.VoidFileOverwriteChecker;
 
 public class CsvWriterTest {
 
@@ -15,21 +15,28 @@ public class CsvWriterTest {
         CsvWriter writer = new CsvWriter();
 
         TableDataDaoCsvImpl dao = new TableDataDaoCsvImpl();
-        dao.setFileOverwriteChecker(new FileOverwriteChecker());
+//        dao.setFileOverwriteChecker(new FileOverwriteChecker());
+        dao.setVoidFileOverwriteChecker(new VoidFileOverwriteChecker());
         dao.setInputSourceWatcher(new FileInputSourceWatcher());
-        TableData td = dao.read(new File("csvTest.csv"));
+        TableData td = new TableData();
 
-        // 書き込むデータをTableDataにaddする
         RowData rowData = new RowData();
-        rowData.setCellValue("列１", "追加,データ");
+        rowData.setCellValue("列１", "１行目：基本データ１");
         rowData.setCellValue("列２", "\"\"");
         rowData.setCellValue("列３", "真\"中");
-        rowData.setCellValue("列４", "144");
-        rowData.setCellValue("列５", "145");
-
         td.add(rowData);
 
-        writer.writeRow(new File("csvTest2.csv"), td);
+        rowData = new RowData();
+        rowData.setCellValue("列４", "列４以外空白");
+        td.add(rowData);
+
+        rowData = new RowData();
+        rowData.setCellValue("列１", "３行目");
+        rowData.setCellValue("列３", "33");
+        rowData.setCellValue("列５", "33,35以外空白");
+        td.add(rowData);
+
+        writer.write(new File("csvTest2.csv"), td);
     }
 
 }

@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
 public class RowData {
 
     private static final Logger LOG = LoggerFactory.getLogger(RowData.class);
-    private static final String rgxDbl = "\"";
-    private static final String rgxDblOrCom = "\"|,|\n";
+    private static final String rgxDblQ = "\"";
+    private static final String rgxDblQorCma = "\"|,|\n";
 
     private Map<String, String> data = new LinkedHashMap<String, String>();
 
@@ -182,7 +182,7 @@ public class RowData {
 
         for (String col : cols) {
 
-            Pattern fstP = Pattern.compile(rgxDbl);
+            Pattern fstP = Pattern.compile(rgxDblQ);
             Matcher fstM = fstP.matcher(col);
 
             if (fstM.find()) {
@@ -190,10 +190,11 @@ public class RowData {
                 col = col.replace("\"", "\"\"");
             }
 
-            Pattern secP = Pattern.compile(rgxDblOrCom);
+            Pattern secP = Pattern.compile(rgxDblQorCma);
             Matcher secM = secP.matcher(col);
 
             if (secM.find()) {
+                // 文字列の最初と最後に「"」を追加する。
                 StringBuilder bld = new StringBuilder();
                 bld.append("\"");
                 bld.append(col);
@@ -204,6 +205,7 @@ public class RowData {
             revisedCols.add(col);
 
         }
+
         return StringUtils.join(revisedCols, ",");
     }
 
