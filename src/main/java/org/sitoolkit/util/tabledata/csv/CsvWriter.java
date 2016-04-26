@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.sitoolkit.util.tabledata.FileIOUtils;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class CsvWriter {
     public void write(File targetFile, TableData tableData) {
 
         try {
-            FileUtils.writeLines(targetFile, CsvIOUtils.getFileEncoding(), mergeSchema(tableData));
+            FileUtils.writeLines(targetFile, FileIOUtils.getFileEncoding(), mergeSchema(tableData));
         } catch (IOException e) {
             LOG.warn("CSVファイルの書き込みに失敗しました。");
             throw new IllegalStateException(e);
@@ -27,7 +28,7 @@ public class CsvWriter {
     }
 
     Collection<RowData> mergeSchema(TableData td) {
-        List<RowData> rows = (List<RowData>) td.getRows();
+        List<RowData> rows = td.getRows();
 
         List<RowData> resultRows = new ArrayList<RowData>();
 

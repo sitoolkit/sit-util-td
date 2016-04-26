@@ -72,22 +72,22 @@ public class FileOverwriteChecker {
             }
 
             switch (answer) {
-            case y:
-                writable = Writable.Yes;
-                break;
-            case a:
-                writable = Writable.Yes;
-                allWritable = Writable.Yes;
-                break;
-            case n:
-                writable = Writable.No;
-                break;
-            case q:
-                writable = Writable.No;
-                allWritable = Writable.No;
-                break;
-            default:
-                writable = Writable.NA;
+                case y:
+                    writable = Writable.Yes;
+                    break;
+                case a:
+                    writable = Writable.Yes;
+                    allWritable = Writable.Yes;
+                    break;
+                case n:
+                    writable = Writable.No;
+                    break;
+                case q:
+                    writable = Writable.No;
+                    allWritable = Writable.No;
+                    break;
+                default:
+                    writable = Writable.NA;
             }
         }
         return Writable.Yes.equals(writable);

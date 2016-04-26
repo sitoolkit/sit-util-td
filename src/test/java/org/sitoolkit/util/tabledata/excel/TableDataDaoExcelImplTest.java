@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -28,9 +27,18 @@ public class TableDataDaoExcelImplTest {
         TableDataDaoExcelImpl dao = new TableDataDaoExcelImpl();
         dao.setFileOverwriteChecker(new FileOverwriteChecker());
         dao.setInputSourceWatcher(new FileInputSourceWatcher());
-        TableData td = dao.read("testdata/ExcelTestScript.xlsx", "TestScript");
-        List<RowData> rows = (List<RowData>) td.getRows();
-        assertThat(rows.get(0).getCellValue("項目名"), is("開始URL"));
+
+        TableData td = dao.read("testdata/excel/ExcelReadTestInput.xlsx");
+        Iterator<RowData> rows = td.getRows().iterator();
+
+        assertCell(rows.next(), "abcあいう");
+        assertCell(rows.next(), "1");
+        assertCell(rows.next(), "1.2");
+        assertCell(rows.next(), "2");
+    }
+
+    private void assertCell(RowData row, String expected) {
+        assertThat(row.getCellValue("列１"), row.getCellValue("列２"), is(expected));
     }
 
     @Test
@@ -54,10 +62,10 @@ public class TableDataDaoExcelImplTest {
         td.setName(sheetName);
         tdc.add(td);
 
-        String actualFilePath = "testdata/actualTestScript.xlsx";
+        String actualFilePath = "target/ExcelWriteTestActual.xlsx";
         File actualFile = new File(actualFilePath);
 
-        dao.write("testdata/TestScriptTemplate.xlsx", actualFile, tdc);
+        dao.write("testdata/excel/ExcelWriteTestTemplate.xlsx", actualFile, tdc);
 
         // Excelファイルの比較
         assertCells(sheetName, actualFilePath);
@@ -77,7 +85,7 @@ public class TableDataDaoExcelImplTest {
     }
 
     private void assertCells(String sheetName, String actualFilepath) throws IOException {
-        File expectedFile = new File("testdata/expectedTestScript.xlsx");
+        File expectedFile = new File("testdata/excel/ExcelWriteTestExpected.xlsx");
         FileInputStream expectedExcellFile = new FileInputStream(expectedFile);
         FileInputStream actualExcellFile = new FileInputStream(actualFilepath);
 

@@ -1,12 +1,10 @@
 package org.sitoolkit.util.tabledata;
 
-import java.io.File;
-
 public interface TableDataDao {
 
-    TableData read(String path, String name);
+    TableData read(String path);
 
-    TableData read(File file);
+    TableData read(String path, String name);
 
     void write(TableData data, String templatePath, String targetPath, String name);
 

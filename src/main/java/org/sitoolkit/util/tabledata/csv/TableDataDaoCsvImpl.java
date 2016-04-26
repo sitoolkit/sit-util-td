@@ -26,14 +26,14 @@ public class TableDataDaoCsvImpl implements TableDataDao {
 
     @Override
     public TableData read(String path, String name) {
-        return read(new File(path));
+        return read(path);
     }
 
     @Override
-    public TableData read(File file) {
-        TableData tableData = reader.readCsv(file);
-        tableData.setInputSource(file.getAbsolutePath());
-        inputSourceWatcher.watch(file.getAbsolutePath());
+    public TableData read(String path) {
+        TableData tableData = reader.readCsv(path);
+        tableData.setInputSource(path);
+        inputSourceWatcher.watch(path);
 
         return tableData;
     }

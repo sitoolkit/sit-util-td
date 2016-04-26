@@ -1,6 +1,5 @@
 package org.sitoolkit.util.tabledata.csv;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -8,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.sitoolkit.util.tabledata.FileIOUtils;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
 import org.slf4j.Logger;
@@ -18,17 +18,16 @@ public class CsvReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(CsvReader.class);
 
-    public TableData readCsv(File file) {
-
-        LOG.info("CSVファイルを読み込みます。");
+    public TableData readCsv(String file) {
 
         List<String> allLines = new ArrayList<String>();
         try {
             // csvファイルの読み込み
-            String allLine = FileUtils.readFileToString(file, CsvIOUtils.getFileEncoding());
+            String allLine = IOUtils.toString(FileIOUtils.getInputStream(file),
+                    FileIOUtils.getFileEncoding());
 
             // 改行コードでsplitしリストに格納
-            for (String line : allLine.split(CsvIOUtils.getLineSeparator())) {
+            for (String line : allLine.split(FileIOUtils.getLineSeparator())) {
                 allLines.add(line);
             }
 
@@ -53,11 +52,11 @@ public class CsvReader {
 
     Map<String, Integer> retriveSchema(String headRowData) {
         Map<String, Integer> schema = new LinkedHashMap<String, Integer>();
-        List<String> cells = CsvIOUtils.splitLine(headRowData, 0);
-        int i = 0;
+        List<String> cells = FileIOUtils.splitLine(headRowData, 0);
+        int colNum = 0;
         for (String cell : cells) {
-            i++;
-            schema.put(cell, i);
+            colNum++;
+            schema.put(cell, colNum);
         }
         return schema;
     }
@@ -74,12 +73,12 @@ public class CsvReader {
      */
     private RowData readRow(Map<String, Integer> schema, String rows) {
         RowData rowData = new RowData();
-        List<String> row = CsvIOUtils.splitLine(rows, schema.size());
+        List<String> row = FileIOUtils.splitLine(rows, schema.size());
 
-        int i = 0;
+        int colNum = 0;
         for (Entry<String, Integer> entry : schema.entrySet()) {
-            rowData.setCellValue(entry.getKey(), row.get(i));
-            i++;
+            rowData.setCellValue(entry.getKey(), row.get(colNum));
+            colNum++;
         }
 
         return rowData;

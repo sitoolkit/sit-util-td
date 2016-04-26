@@ -1,26 +1,53 @@
-package org.sitoolkit.util.tabledata.csv;
+package org.sitoolkit.util.tabledata;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class CsvIOUtils {
+public class FileIOUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CsvIOUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileIOUtils.class);
 
     private static String fileEncoding = System.getProperty("file.encoding");
 
     private static String lineSeparator = System.getProperty("line.separator");
 
-    static String escapeReturn(Object obj) {
+    public static String escapeReturn(Object obj) {
         if (obj == null) {
             return "";
         }
         return obj.toString().replaceAll("\\r\\n|\\n|\\r", "\\\\n");
+    }
+
+    public static InputStream getInputStream(String path) throws IOException {
+        if (path.startsWith("http://") || path.startsWith("https://")) {
+            URL url = new URL(path);
+            LOG.info("ファイルを読み込みます {}", url);
+            return url.openStream();
+
+        } else if (path.startsWith("classpath:")) {
+            String classpath = StringUtils.substringAfter(path, "classpath:");
+            URL url = Thread.currentThread().getContextClassLoader().getResource(classpath);
+            LOG.info("ファイルを読み込みます {}", url);
+            return url.openStream();
+
+        } else {
+            File file = new File(path);
+            LOG.info("ファイルを読み込みます {}", file.getAbsolutePath());
+
+            return new FileInputStream(path);
+
+        }
     }
 
     /**
@@ -33,7 +60,7 @@ class CsvIOUtils {
      *            分割数
      * @return 「,」(半角カンマ)または「\t」(タブ)で分割した文字配列
      */
-    static List<String> splitLine(String line, int columnsNum) {
+    public static List<String> splitLine(String line, int columnsNum) {
         String[] values = line.split(",|\t");
 
         List<String> strList = Arrays.asList(values);
@@ -95,7 +122,7 @@ class CsvIOUtils {
     }
 
     public static void setFileEncoding(String fileEncoding) {
-        CsvIOUtils.fileEncoding = fileEncoding;
+        FileIOUtils.fileEncoding = fileEncoding;
     }
 
     public static String getLineSeparator() {
@@ -103,7 +130,7 @@ class CsvIOUtils {
     }
 
     public static void setLineSeparator(String lineSeparator) {
-        CsvIOUtils.lineSeparator = lineSeparator;
+        FileIOUtils.lineSeparator = lineSeparator;
     }
 
 }

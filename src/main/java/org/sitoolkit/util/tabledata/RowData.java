@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.sitoolkit.util.tabledata;
 
 import java.util.ArrayList;
@@ -132,13 +133,13 @@ public class RowData {
             List<ReplacePattern> replaces) {
         Map<String, String> map = new TreeMap<String, String>();
 
-        Pattern p = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(regex);
         for (Entry<String, String> entry : getData().entrySet()) {
-            Matcher m = p.matcher(entry.getKey());
+            Matcher matcher = pattern.matcher(entry.getKey());
 
-            if (m.matches()) {
+            if (matcher.matches()) {
                 String value = value(entry.getValue(), replaces);
-                map.put(m.group(groupIdx), value);
+                map.put(matcher.group(groupIdx), value);
             }
         }
         return map;

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.sitoolkit.util.tabledata;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +33,7 @@ public class TableData {
 
     private List<RowData> rows = new ArrayList<>();
 
-    public Collection<RowData> getRows() {
+    public List<RowData> getRows() {
         return rows;
     }
 
@@ -45,17 +45,13 @@ public class TableData {
         this.name = name;
     }
 
-    private List<RowData> rows() {
-        return rows;
-    }
-
     public void add(RowData rowData) {
-        rows().add(rowData);
+        rows.add(rowData);
     }
 
     @Override
     public String toString() {
-        return StringUtils.join(getRows(), "\r\n");
+        return StringUtils.join(rows, FileIOUtils.getLineSeparator());
     }
 
     @Override
@@ -85,7 +81,7 @@ public class TableData {
     }
 
     public int getRowCount() {
-        return rows().size();
+        return rows.size();
     }
 
     public String getInputSource() {

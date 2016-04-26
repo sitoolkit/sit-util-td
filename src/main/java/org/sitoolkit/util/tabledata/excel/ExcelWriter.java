@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.sitoolkit.util.tabledata.FileIOUtils;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
 import org.sitoolkit.util.tabledata.TableDataCatalog;
@@ -42,7 +43,7 @@ public class ExcelWriter {
     }
 
     private void writeRow(RowData rowData, Map<String, Integer> schema, Row row) {
-        LOG.debug("{}行目に書き込みます。{}", row.getRowNum(), ExcelIOUtils.escapeReturn(rowData));
+        LOG.debug("{}行目に書き込みます。{}", row.getRowNum(), FileIOUtils.escapeReturn(rowData));
         for (String columnName : schema.keySet()) {
             writeCellValue(rowData.getCellValue(columnName), schema, columnName, row);
         }

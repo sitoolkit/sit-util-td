@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sitoolkit.util.tabledata.FileIOUtils;
 import org.sitoolkit.util.tabledata.FileInputSourceWatcher;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
@@ -19,19 +20,19 @@ import org.sitoolkit.util.tabledata.VoidFileOverwriteChecker;
 
 public class TableDataDaoCsvImplTest {
 
-    static String fileEncoding = CsvIOUtils.getFileEncoding();
-    static String lineSeparator = CsvIOUtils.getLineSeparator();
+    static String fileEncoding = FileIOUtils.getFileEncoding();
+    static String lineSeparator = FileIOUtils.getLineSeparator();
 
     @BeforeClass
     public static void beforeClass() {
-        CsvIOUtils.setFileEncoding("MS932");
-        CsvIOUtils.setLineSeparator("\r\n");
+        FileIOUtils.setFileEncoding("MS932");
+        FileIOUtils.setLineSeparator("\r\n");
     }
 
     @AfterClass
     public static void afterClass() {
-        CsvIOUtils.setFileEncoding(fileEncoding);
-        CsvIOUtils.setLineSeparator(lineSeparator);
+        FileIOUtils.setFileEncoding(fileEncoding);
+        FileIOUtils.setLineSeparator(lineSeparator);
     }
 
     @Test
@@ -39,8 +40,8 @@ public class TableDataDaoCsvImplTest {
         TableDataDaoCsvImpl dao = new TableDataDaoCsvImpl();
         dao.setFileOverwriteChecker(new VoidFileOverwriteChecker());
         dao.setInputSourceWatcher(new FileInputSourceWatcher());
-        TableData td = dao.read(new File("testdata/csvTest.csv"));
-        List<RowData> rows = (List<RowData>) td.getRows();
+        TableData td = dao.read("testdata/csv/CsvReadTestInput.csv");
+        List<RowData> rows = td.getRows();
 
         Iterator<RowData> row = rows.iterator();
 
@@ -89,16 +90,17 @@ public class TableDataDaoCsvImplTest {
         td.add(buildRow("ダブルクォートあり", "最後だけ\"", "\"真\"ん中\"", "\"最初だけ", "真中\"だけ"));
         td.add(buildRow("ダブルクォートだけ", "\"", "\"\"", "\"\"\"", "\"\"\"\""));
 
-        File actualFile = new File("testdata/csvTest2.csv");
+        File actualFile = new File("target/CsvWriteTestActual.csv");
 
         dao.write(td, actualFile);
 
-        List<String> actualAllLines = FileUtils.readLines(actualFile, CsvIOUtils.getFileEncoding());
+        List<String> actualAllLines = FileUtils.readLines(actualFile,
+                FileIOUtils.getFileEncoding());
         Iterator<String> actualItr = actualAllLines.iterator();
 
-        File expectedFile = new File("testdata/csvTest.csv");
+        File expectedFile = new File("testdata/csv/CsvWriteTestExpected.csv");
         List<String> expectedAllLines = FileUtils.readLines(expectedFile,
-                CsvIOUtils.getFileEncoding());
+                FileIOUtils.getFileEncoding());
 
         assertThat(actualAllLines.size(), is(expectedAllLines.size()));
 
