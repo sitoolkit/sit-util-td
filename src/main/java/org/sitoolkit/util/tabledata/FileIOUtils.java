@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,6 +22,17 @@ public class FileIOUtils {
     private static String fileEncoding = System.getProperty("file.encoding");
 
     private static String lineSeparator = System.getProperty("line.separator");
+
+    private static String cellSeparator = ",";
+
+    /**
+     * CSVデータにおけるセル内改行による行分離の開始行であることを判定するパターン 「,"」を含む　または　「"」で始まる
+     */
+    private static final Pattern LINE_SEPARATE_START = Pattern.compile(".*,\"{1}.*|^\"{1}.*");
+    /**
+     * CSVデータにおけるセル内改行による行分離の終了行であることを判定するパターン 「",」を含む　または　「"」で終わる または「,」で終わる
+     */
+    private static final Pattern LINE_SEPARATE_END = Pattern.compile(".*\"{1},.+|.*\"{1}$|.*,$");
 
     public static String escapeReturn(Object obj) {
         if (obj == null) {
@@ -51,62 +63,99 @@ public class FileIOUtils {
     }
 
     /**
-     * 文字列を「,」(半角カンマ)または「\t」(タブ)で分割した文字配列を返します。 分割後の1要素の文字列が「
+     * CSV文字列をセル内改行を考慮して1行ずつに分離します。
+     * 
+     * @param csvText
+     *            CSV文字列
+     * @return セル内改行を考慮した1行ずつを保持するList
+     */
+    public static List<String> splitToLines(String csvText) {
+        List<String> newLines = new ArrayList<>();
+
+        for (Iterator<String> lineItr = Arrays.asList(csvText.split("\r\n|\n")).iterator(); lineItr
+                .hasNext();) {
+
+            String line = lineItr.next();
+            LOG.trace("line : {}", line);
+            StringBuilder newLine = new StringBuilder(line);
+
+            // 行内にダブルクオーテーションが奇数個の場合はセル内改行ありとみなし、
+            // 次にダブルクオーテーションが奇数個の行までを連結して1行とする。
+            if (StringUtils.countMatches(line, '"') % 2 != 0) {
+
+                do {
+                    line = lineItr.next();
+                    newLine.append("\n");
+                    newLine.append(line);
+                } while (StringUtils.countMatches(line, '"') % 2 == 0 && lineItr.hasNext());
+
+            }
+
+            String newLineStr = newLine.toString();
+            LOG.trace("new line : {}", newLineStr);
+            newLines.add(newLine.toString());
+        }
+
+        LOG.trace("actual line number : {}", newLines.size());
+        return newLines;
+    }
+
+    /**
+     * 文字列を「,」(半角カンマ)または「\t」(タブ)で分割しListに格納して返します。分割後の1要素の文字列が「
      * "」(半角ダブルクオーテーション)で開始かつ終了していた場合は、 前後の「"」を除きます。
+     * 分割後の要素数が下限値に満たない場合でも、空文字をList末尾に追加して下限値となるようにします。
      *
      * @param line
      *            分割対象の文字列
-     * @param columnsNum
-     *            分割数
-     * @return 「,」(半角カンマ)または「\t」(タブ)で分割した文字配列
+     * @param minCnt
+     *            分割後の要素数の下限値
+     * @return 「,」(半角カンマ)または「\t」(タブ)で分割した文字を格納するList
      */
-    public static List<String> splitLine(String line, int columnsNum) {
-        String[] values = line.split(",|\t");
+    public static List<String> splitToCells(String line, int minCnt) {
 
-        List<String> strList = Arrays.asList(values);
-        List<String> newStrList = new ArrayList<String>();
-        StringBuilder builder = null;
+        LOG.trace("split line : {}", line);
 
-        for (Iterator<String> itr = strList.iterator(); itr.hasNext();) {
+        List<String> newCells = new ArrayList<String>();
 
-            String startStr = itr.next();
+        for (Iterator<String> cellItr = Arrays.asList(line.split(",")).iterator(); cellItr
+                .hasNext();) {
 
-            if (startStr.startsWith("\"") && !startStr.endsWith("\"")) {
+            String cell = cellItr.next();
+            StringBuilder builder = new StringBuilder(cell);
 
-                builder = new StringBuilder();
-                builder.append(startStr);
-
-                String nextStr = null;
+            // セル内のダブルクオーテーションが奇数個の場合はセル内分割があるとみなし、
+            // 次のダブルクオーテーションが奇数個のセルまで連結して1セルとする。
+            if (StringUtils.countMatches(cell, '"') % 2 != 0) {
 
                 do {
-                    nextStr = itr.next();
+                    cell = cellItr.next();
                     // splitで除外された「,」をappend
                     builder.append(",");
-                    builder.append(nextStr);
+                    builder.append(cell);
 
-                } while (!nextStr.endsWith("\"") && itr.hasNext());
+                } while (StringUtils.countMatches(cell, '"') % 2 == 0 && cellItr.hasNext());
 
-                newStrList.add(modifyStr(builder.toString()));
-
-            } else {
-                newStrList.add(modifyStr(startStr));
             }
-        }
-        // 最終列から見て最初にデータが入力されているセルまでの空白のセルが「newStrList」にaddされていないため補完する。
-        if (newStrList.size() < columnsNum) {
-            do {
-                newStrList.add("");
-            } while (newStrList.size() != columnsNum);
+
+            newCells.add(modifyStr(builder.toString()));
+
         }
 
-        return newStrList;
+        while (newCells.size() < minCnt) {
+            newCells.add("");
+        }
+
+        LOG.trace("new cells : {}", newCells);
+
+        return newCells;
     }
 
     private static String modifyStr(String inStr) {
         String retStr = inStr;
 
         // 文字列が「"」(半角ダブルクオーテーション)で開始かつ終了していた場合は、 前後の「"」を除く。
-        if (retStr != null && retStr.startsWith("\"") && retStr.endsWith("\"")) {
+        if (retStr != null && retStr.length() > 1 && retStr.startsWith("\"")
+                && retStr.endsWith("\"")) {
             retStr = retStr.substring(1, retStr.length() - 1);
         }
         // 文字列内の「""」を「"」に置換する。
@@ -131,6 +180,14 @@ public class FileIOUtils {
 
     public static void setLineSeparator(String lineSeparator) {
         FileIOUtils.lineSeparator = lineSeparator;
+    }
+
+    public static String getCellSeparator() {
+        return cellSeparator;
+    }
+
+    public static void setCellSeparator(String cellSeparator) {
+        FileIOUtils.cellSeparator = cellSeparator;
     }
 
 }

@@ -23,11 +23,11 @@ public class CsvReader {
         List<String> allLines = new ArrayList<String>();
         try {
             // csvファイルの読み込み
-            String allLine = IOUtils.toString(FileIOUtils.getInputStream(file),
+            String text = IOUtils.toString(FileIOUtils.getInputStream(file),
                     FileIOUtils.getFileEncoding());
 
             // 改行コードでsplitしリストに格納
-            for (String line : allLine.split(FileIOUtils.getLineSeparator())) {
+            for (String line : FileIOUtils.splitToLines(text)) {
                 allLines.add(line);
             }
 
@@ -40,9 +40,13 @@ public class CsvReader {
 
         // データヘッダをリストから除外し、schemaに設定
         Map<String, Integer> schema = retriveSchema(allLines.remove(0));
+        LOG.debug("ヘッダー行{}", schema);
 
-        for (String line : allLines) {
-            tableData.add(readRow(schema, line));
+        for (int i = 0; i < allLines.size(); i++) {
+            RowData row = readRow(schema, allLines.get(i));
+            tableData.add(row);
+
+            LOG.debug("{}行目を読み込みました {}", i + 1, FileIOUtils.escapeReturn(row));
         }
 
         LOG.info("CSVファイルのデータを{}行読み込みました。", tableData.getRowCount());
@@ -52,7 +56,7 @@ public class CsvReader {
 
     Map<String, Integer> retriveSchema(String headRowData) {
         Map<String, Integer> schema = new LinkedHashMap<String, Integer>();
-        List<String> cells = FileIOUtils.splitLine(headRowData, 0);
+        List<String> cells = FileIOUtils.splitToCells(headRowData, 0);
         int colNum = 0;
         for (String cell : cells) {
             colNum++;
@@ -65,20 +69,19 @@ public class CsvReader {
      *
      * @param schema
      *            スキーマ
-     * @param rows
+     * @param line
      *            行データ文字列
      * @param rownum
      *            行番号
      * @return 行オブジェクトの情報を読み込んだRowDataオブジェクト
      */
-    private RowData readRow(Map<String, Integer> schema, String rows) {
+    private RowData readRow(Map<String, Integer> schema, String line) {
         RowData rowData = new RowData();
-        List<String> row = FileIOUtils.splitLine(rows, schema.size());
+        List<String> row = FileIOUtils.splitToCells(line, schema.size());
 
         int colNum = 0;
         for (Entry<String, Integer> entry : schema.entrySet()) {
-            rowData.setCellValue(entry.getKey(), row.get(colNum));
-            colNum++;
+            rowData.setCellValue(entry.getKey(), row.get(colNum++));
         }
 
         return rowData;
