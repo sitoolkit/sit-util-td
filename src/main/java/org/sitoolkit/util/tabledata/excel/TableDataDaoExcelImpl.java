@@ -34,14 +34,19 @@ public class TableDataDaoExcelImpl implements TableDataDao {
 
     private InputSourceWatcher inputSourceWatcher;
 
+    public TableDataCatalog readAll(String path) {
+        return read(path, new String[0]);
+    }
+
+    @Override
+    public TableData read(String path) {
+        return read(path, "Sheet1");
+    }
+
     @Override
     public TableData read(String path, String name) {
         TableDataCatalog tableDataCatalog = readAll(path);
         return tableDataCatalog.get(name);
-    }
-
-    public TableDataCatalog readAll(String path) {
-        return read(path, new String[0]);
     }
 
     public TableDataCatalog read(String filePath, String[] sheetNames) {
@@ -110,7 +115,7 @@ public class TableDataDaoExcelImpl implements TableDataDao {
         try {
             fos = new FileOutputStream(targetFile);
             writer.writeWorkbook(reader.load(templateFile), catalog).write(fos);
-            LOG.debug("Excelファイルに書き込みました。");
+            LOG.debug("Excelファイルに書き込みました。{}", targetFile.getAbsolutePath());
         } catch (IOException e) {
             throw new IllegalStateException(e);
         } finally {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.sitoolkit.util.tabledata;
 
 import java.util.Collection;
@@ -42,13 +43,7 @@ public class TableDataCatalog {
     }
 
     public TableData get(String name) {
-        TableData tableData = data().get(name);
-        if (tableData == null) {
-            // TODO 「Excelファイル」はRepostoryの実装によって変わる。
-            throw new IllegalArgumentException(
-                    "Excelファイル：" + getName() + "にシート：" + name + "がありません。");
-        }
-        return tableData;
+        return data().get(name);
     }
 
     private Map<String, TableData> data() {

@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.sitoolkit.util.tabledata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,6 +40,7 @@ import org.slf4j.LoggerFactory;
 public class RowData {
 
     private static final Logger LOG = LoggerFactory.getLogger(RowData.class);
+
     private Map<String, String> data = new LinkedHashMap<String, String>();
 
     public RowData() {
@@ -129,13 +133,13 @@ public class RowData {
             List<ReplacePattern> replaces) {
         Map<String, String> map = new TreeMap<String, String>();
 
-        Pattern p = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(regex);
         for (Entry<String, String> entry : getData().entrySet()) {
-            Matcher m = p.matcher(entry.getKey());
+            Matcher matcher = pattern.matcher(entry.getKey());
 
-            if (m.matches()) {
+            if (matcher.matches()) {
                 String value = value(entry.getValue(), replaces);
-                map.put(m.group(groupIdx), value);
+                map.put(matcher.group(groupIdx), value);
             }
         }
         return map;
@@ -171,7 +175,25 @@ public class RowData {
 
     @Override
     public String toString() {
-        return StringUtils.join(getData().values(), ",");
+
+        Collection<String> cols = getData().values();
+        Collection<String> returnCols = new LinkedList<String>();
+
+        for (String col : cols) {
+
+            if (col.contains("\"")) {
+                col = col.replace("\"", "\"\"");
+                col = "\"" + col + "\"";
+            } else if (StringUtils.containsAny(col, ",", "\n")) {
+                col = "\"" + col + "\"";
+            }
+
+            returnCols.add(col);
+
+        }
+
+        return StringUtils.join(returnCols, ",");
+
     }
 
     @Override

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.sitoolkit.util.tabledata;
 
 import static org.junit.Assert.assertEquals;
@@ -21,7 +22,6 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sitoolkit.util.tabledata.EnumConverter;
 
 /**
  *

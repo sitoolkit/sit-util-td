@@ -1,19 +1,17 @@
 package org.sitoolkit.util.tabledata.excel;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.sitoolkit.util.tabledata.FileIOUtils;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
 import org.slf4j.Logger;
@@ -27,7 +25,7 @@ public class ExcelReader {
         // LOG.info("Excelファイルを読み込みます。{}", file.getAbsolutePath());
         InputStream fis = null;
         try {
-            fis = getInputStream(path);
+            fis = FileIOUtils.getInputStream(path);
             if (path.endsWith(".xlsx")) {
                 return new XSSFWorkbook(fis);
             } else {
@@ -43,17 +41,6 @@ public class ExcelReader {
                     LOG.warn("ストリームのクローズで例外が発生しました。", e);
                 }
             }
-        }
-    }
-
-    private InputStream getInputStream(String path) throws IOException {
-        if (path.startsWith("http://")) {
-            return new URL(path).openStream();
-        } else if (path.startsWith("classpath:")) {
-            String classpath = StringUtils.substringAfter(path, "classpath:");
-            return Thread.currentThread().getContextClassLoader().getResourceAsStream(classpath);
-        } else {
-            return new FileInputStream(path);
         }
     }
 
@@ -102,7 +89,7 @@ public class ExcelReader {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("{}行目を読み込みました。{}", row.getRowNum(), ExcelIOUtils.escapeReturn(rowData));
+            LOG.debug("{}行目を読み込みました。{}", row.getRowNum(), FileIOUtils.escapeReturn(rowData));
         }
 
         return rowData;

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.sitoolkit.util.tabledata;
 
 public interface StringLoadable {
 
-	public void load(String str);
+    public void load(String str);
 }

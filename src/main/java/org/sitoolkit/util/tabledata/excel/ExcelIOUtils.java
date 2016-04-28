@@ -48,15 +48,15 @@ class ExcelIOUtils {
         }
         try {
             switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_NUMERIC:
-                cellValue = roundValue(cell.getNumericCellValue());
-                break;
-            case Cell.CELL_TYPE_FORMULA:
-                cellValue = roundValue(cell.getSheet().getWorkbook().getCreationHelper()
-                        .createFormulaEvaluator().evaluate(cell).formatAsString());
-                break;
-            default:
-                cellValue = cell.getStringCellValue();
+                case Cell.CELL_TYPE_NUMERIC:
+                    cellValue = roundValue(cell.getNumericCellValue());
+                    break;
+                case Cell.CELL_TYPE_FORMULA:
+                    cellValue = roundValue(cell.getSheet().getWorkbook().getCreationHelper()
+                            .createFormulaEvaluator().evaluate(cell).formatAsString());
+                    break;
+                default:
+                    cellValue = cell.getStringCellValue();
             }
         } catch (Exception e) {
             LOG.warn("セル({}, {})の値の取得が失敗しました。{}", cell.getRowIndex(), cell.getColumnIndex(),
@@ -96,8 +96,9 @@ class ExcelIOUtils {
     static Row findHeaderRow(Sheet sheet) {
         LOG.debug("シート[{}]のヘッダー行を特定します。", sheet.getSheetName(), cornerCellPattern);
         Row headerRow = null;
-        final int rowCnt = sheet.getPhysicalNumberOfRows();
-        for (int i = 0; i < rowCnt; i++) {
+        final int firstRowNum = sheet.getFirstRowNum();
+        final int lastRowNum = sheet.getLastRowNum();
+        for (int i = firstRowNum; i <= lastRowNum; i++) {
             Row row = sheet.getRow(i);
             if (row == null) {
                 continue;
@@ -119,13 +120,6 @@ class ExcelIOUtils {
             LOG.warn("シート[{}]には、パターン[{}]に一致するセルが見つかりません。", sheet.getSheetName(), cornerCellPattern);
         }
         return headerRow;
-    }
-
-    static String escapeReturn(Object obj) {
-        if (obj == null) {
-            return "";
-        }
-        return obj.toString().replaceAll("\\r\\n|\\n|\\r", "\\\\n");
     }
 
 }

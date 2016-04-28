@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.sitoolkit.util.tabledata;
 
 import java.net.URL;
@@ -40,12 +41,12 @@ public class JaxbUtils {
     public static <T> T res2obj(Class<T> type, String path) {
         try {
             JAXBContext ctx = ctx(type);
-            Unmarshaller u = ctx.createUnmarshaller();
+            Unmarshaller unmarshaller = ctx.createUnmarshaller();
             URL resource = type.getResource(path);
 
             LOG.info("XMLを読み込みます。{}", resource);
 
-            return (T) u.unmarshal(resource);
+            return (T) unmarshaller.unmarshal(resource);
         } catch (JAXBException e) {
             throw new IllegalStateException(e);
         }
