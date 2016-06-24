@@ -22,10 +22,10 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitoolkit.util.tabledata.schema.Column;
@@ -58,6 +58,10 @@ public class TableDataMapper {
 
     private BeanFactory beanFactory;
 
+    private BeanUtilsBean beanUtils = new BeanUtilsBean();
+
+    private PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
+
     public RowData map(String beanId, Object bean) {
         RowData rowData = new RowData();
         Table table = tableMap.get(beanId);
@@ -67,8 +71,8 @@ public class TableDataMapper {
                 continue;
             }
             try {
-                Object value = BeanUtils.getProperty(bean, column.getProperty());
-                Class<?> propertyType = PropertyUtils.getPropertyType(bean, column.getProperty());
+                Object value = beanUtils.getProperty(bean, column.getProperty());
+                Class<?> propertyType = propertyUtils.getPropertyType(bean, column.getProperty());
                 if (ClassUtils.isAssignable(propertyType, Integer.class)) {
                     rowData.setInt(column.getName(), Integer.parseInt(value.toString()),
                             column.getMin());
@@ -113,7 +117,7 @@ public class TableDataMapper {
     protected void map(Object bean, Column column, RowData rowData) {
         try {
             String property = column.getProperty();
-            Object value = retriveValue(PropertyUtils.getPropertyType(bean, column.getProperty()),
+            Object value = retriveValue(propertyUtils.getPropertyType(bean, column.getProperty()),
                     rowData, column);
 
             if (log.isTraceEnabled()) {
@@ -121,7 +125,7 @@ public class TableDataMapper {
                         new Object[] { bean.getClass().getSimpleName(), property, value });
             }
 
-            BeanUtils.setProperty(bean, property, value);
+            beanUtils.setProperty(bean, property, value);
         } catch (Exception e) {
             log.error("ID:{}", column.getProperty(), e);
             throw new IllegalStateException(e);
@@ -176,10 +180,11 @@ public class TableDataMapper {
         if (log.isDebugEnabled()) {
             log.debug("Commons BeanUtilsのコンバータを登録します。{}", getConverterMap());
         }
+        ConvertUtilsBean convertUtils = new ConvertUtilsBean();
         for (Entry<Class<?>, ? extends Converter> entry : getConverterMap().entrySet()) {
-            ConvertUtils.register(entry.getValue(), entry.getKey());
+            convertUtils.register(entry.getValue(), entry.getKey());
         }
-
+        beanUtils = new BeanUtilsBean(convertUtils);
     }
 
     public Map<Class<?>, Converter> getConverterMap() {
