@@ -1,5 +1,7 @@
 package org.sitoolkit.util.tabledata.excel;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,7 +38,7 @@ class ExcelIOUtils {
 
     /**
      * セルの値をStringとして取得します。
-     * 
+     *
      * @param cell
      *            値を取得するセル
      * @return セルの値 セルがnullまたは値の取得に失敗した場合は空文字を返します。
@@ -49,7 +51,13 @@ class ExcelIOUtils {
         try {
             switch (cell.getCellType()) {
                 case Cell.CELL_TYPE_NUMERIC:
-                    cellValue = roundValue(cell.getNumericCellValue());
+                    if (CellDateFormat.isDateCell(cell)) {
+                        Date date = cell.getDateCellValue();
+                        DateFormat dateFormat = CellDateFormat.getFormat(cell.getCellStyle().getDataFormat()).getDateFormat();
+                        cellValue = dateFormat.format(date);
+                    } else {
+                        cellValue = roundValue(cell.getNumericCellValue());
+                    }
                     break;
                 case Cell.CELL_TYPE_FORMULA:
                     cellValue = roundValue(cell.getSheet().getWorkbook().getCreationHelper()
