@@ -18,7 +18,7 @@ public enum CellDateFormat {
     FORMAT_179(179, new SimpleDateFormat("d-MMM", Locale.ENGLISH)),
     FORMAT_180(180, new SimpleDateFormat("d-MMM-yy", Locale.ENGLISH)),
     FORMAT_181(181, new SimpleDateFormat("MMM-yy", Locale.ENGLISH)),
-    FORMAT_183(183, new SimpleDateFormat("yyyy年M月d日"));
+    FORMAT_182(182, new SimpleDateFormat("yyyy年M月d日"));
 
     private int formatId;
 
