@@ -1,7 +1,7 @@
 package org.sitoolkit.util.tabledata.excel;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +35,16 @@ public class TableDataDaoExcelImplTest {
         assertCell(rows.next(), "1");
         assertCell(rows.next(), "1.2");
         assertCell(rows.next(), "2");
+        assertCell(rows.next(), "2017/4/4");
+        assertCell(rows.next(), "4-Apr-17");
+        assertCell(rows.next(), "4-Apr");
+        assertCell(rows.next(), "Apr-17");
+        assertCell(rows.next(), "4:17 PM");
+        assertCell(rows.next(), "4:17:00 PM");
+        assertCell(rows.next(), "16:17");
+        assertCell(rows.next(), "16:01:14");
+        assertCell(rows.next(), "2017/4/4 16:18");
+        assertCell(rows.next(), "2017年8月12日");
     }
 
     private void assertCell(RowData row, String expected) {
