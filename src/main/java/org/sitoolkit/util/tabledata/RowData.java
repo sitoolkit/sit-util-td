@@ -219,7 +219,7 @@ public class RowData {
     }
 
     public String cleansing(String str) {
-        return StringUtils.isEmpty(str) ? "" : str.replaceAll("[\\r|\\n| |　]", "");
+        return StringUtils.isEmpty(str) ? "" : str.replaceAll("[\\r\\n 　]", "");
     }
 
     public boolean isEmpty(Object obj) {
