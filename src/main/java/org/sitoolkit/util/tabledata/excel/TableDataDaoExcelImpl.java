@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.sitoolkit.util.tabledata.FileOverwriteChecker;
 import org.sitoolkit.util.tabledata.InputSourceWatcher;
+import org.sitoolkit.util.tabledata.MessageManager;
 import org.sitoolkit.util.tabledata.TableData;
 import org.sitoolkit.util.tabledata.TableDataCatalog;
 import org.sitoolkit.util.tabledata.TableDataDao;
@@ -74,13 +75,13 @@ public class TableDataDaoExcelImpl implements TableDataDao {
             }
             TableData tableData = reader.readSheet(sheet);
             if (tableData == null) {
-                LOG.warn("シート[{}]は読み取り可能なテーブルデータがありません。", sheet.getSheetName());
+                LOG.warn(MessageManager.getMessage("sheet.noLoadableTableData"),
+                        sheet.getSheetName());
                 continue;
             }
             catalog.add(tableData);
         }
 
-        LOG.info("Excelファイルを読み込みました。");
         return catalog;
     }
 
@@ -91,7 +92,8 @@ public class TableDataDaoExcelImpl implements TableDataDao {
             Sheet sheet = workbook.getSheet(sheetName);
             TableData tableData = reader.readSheet(sheet);
             if (tableData == null) {
-                LOG.warn("シート[{}]は読み取り可能なテーブルデータがありません。", sheet.getSheetName());
+                LOG.warn(MessageManager.getMessage("sheet.noLoadableTableData"),
+                        sheet.getSheetName());
                 continue;
             }
             catalog.add(tableData);
@@ -110,12 +112,12 @@ public class TableDataDaoExcelImpl implements TableDataDao {
         if (!fileOverwriteChecker.isWritable(targetFile)) {
             return;
         }
-        LOG.info("Excelファイルに書き込みます。{}", targetFile.getAbsolutePath());
+        LOG.info(MessageManager.getMessage("excel.writing"), targetFile.getAbsolutePath());
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(targetFile);
             writer.writeWorkbook(reader.load(templateFile), catalog).write(fos);
-            LOG.debug("Excelファイルに書き込みました。{}", targetFile.getAbsolutePath());
+            LOG.debug(MessageManager.getMessage("excel.wrote"), targetFile.getAbsolutePath());
         } catch (IOException e) {
             throw new IllegalStateException(e);
         } finally {
@@ -123,7 +125,7 @@ public class TableDataDaoExcelImpl implements TableDataDao {
                 try {
                     fos.close();
                 } catch (IOException e) {
-                    LOG.warn("ストリームのクローズで例外が発生しました。", e);
+                    LOG.warn(MessageManager.getMessage("exception.closingStream"), e);
                 }
             }
         }

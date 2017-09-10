@@ -32,7 +32,7 @@ import java.util.Set;
 
 /**
  * ファイルの入力ソースに対する監視クラス実装です。
- * 
+ *
  * @author yuichi.kuwahara
  */
 public class FileInputSourceWatcher extends InputSourceWatcher {
@@ -44,7 +44,7 @@ public class FileInputSourceWatcher extends InputSourceWatcher {
 
     /**
      * ファイルを監視対象に含めます。
-     * 
+     *
      * @param inputSource
      *            監視対象ファイル
      */
@@ -52,13 +52,13 @@ public class FileInputSourceWatcher extends InputSourceWatcher {
     public void watchInputSource(String inputSource) {
         File file = new File(inputSource);
         if (!file.exists()) {
-            log.warn("存在しないファイルが指定されました。{}", file.getAbsolutePath());
+            log.warn(MessageManager.getMessage("filewatcher.fileNotFound"), file.getAbsolutePath());
             return;
         }
         if (watchingFileMap.containsKey(file.getAbsolutePath())) {
             return;
         }
-        log.info("ファイルを監視対象に追加します。{}", file.getAbsolutePath());
+        log.info(MessageManager.getMessage("filewatcher.addFile"), file.getAbsolutePath());
         watchingFileMap.put(file.getAbsolutePath(),
                 new InputSource(inputSource, file.lastModified()));
 
@@ -66,7 +66,7 @@ public class FileInputSourceWatcher extends InputSourceWatcher {
         if (watchingDirSet.contains(dir.getAbsolutePath())) {
             return;
         }
-        log.info("ディレクトリを監視対象に追加します。{}", dir.getAbsolutePath());
+        log.info(MessageManager.getMessage("filewatcher.addDirectory"), dir.getAbsolutePath());
         watchingDirSet.add(dir.getAbsolutePath());
 
         Path dirPath = dir.toPath();
@@ -101,11 +101,13 @@ public class FileInputSourceWatcher extends InputSourceWatcher {
         for (WatchEvent<?> event : watchKey.pollEvents()) {
             Path dir = pathMap.get(watchKey);
             File changedFile = dir.resolve((Path) event.context()).toFile();
-            log.debug("変更イベントを検知しました。{}", changedFile.getAbsolutePath());
+            log.debug(MessageManager.getMessage("filewatcher.detectedChangeEvent"),
+                    changedFile.getAbsolutePath());
 
             InputSource inputSource = watchingFileMap.get(changedFile.getAbsolutePath());
             if (inputSource != null && inputSource.lastModified != changedFile.lastModified()) {
-                log.info("再生成を実行します。{}", changedFile.getAbsolutePath());
+                log.info(MessageManager.getMessage("filewatcher.regenerate"),
+                        changedFile.getAbsolutePath());
                 cg.regenerate(inputSource.name);
                 inputSource.lastModified = changedFile.lastModified();
             }
@@ -118,7 +120,7 @@ public class FileInputSourceWatcher extends InputSourceWatcher {
         try {
             watcher.close();
         } catch (IOException e) {
-            log.warn("例外が発生しました", e);
+            log.warn(MessageManager.getMessage("exception.closingWatchService"), e);
         }
         for (InputSource inputSource : watchingFileMap.values()) {
             cg.regenerate(inputSource.name);

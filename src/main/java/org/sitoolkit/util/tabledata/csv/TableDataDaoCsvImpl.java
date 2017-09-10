@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.sitoolkit.util.tabledata.FileOverwriteChecker;
 import org.sitoolkit.util.tabledata.InputSourceWatcher;
+import org.sitoolkit.util.tabledata.MessageManager;
 import org.sitoolkit.util.tabledata.TableData;
 import org.sitoolkit.util.tabledata.TableDataDao;
 import org.sitoolkit.util.tabledata.excel.TableDataDaoExcelImpl;
@@ -47,12 +48,12 @@ public class TableDataDaoCsvImpl implements TableDataDao {
         if (!fileOverwriteChecker.isWritable(targetFile)) {
             return;
         }
-        LOG.info("CSVファイルに書き込みます。{}", targetFile.getAbsolutePath());
+        LOG.info(MessageManager.getMessage("csv.writing"), targetFile.getAbsolutePath());
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(targetFile);
             writer.write(targetFile, data);
-            LOG.debug("CSVファイルに書き込みました。");
+            LOG.debug(MessageManager.getMessage("csv.wrote"), targetFile.getAbsolutePath());
         } catch (IOException e) {
             throw new IllegalStateException(e);
         } finally {
@@ -60,7 +61,7 @@ public class TableDataDaoCsvImpl implements TableDataDao {
                 try {
                     fos.close();
                 } catch (IOException e) {
-                    LOG.warn("ストリームのクローズで例外が発生しました。", e);
+                    LOG.warn(MessageManager.getMessage("exception.closingStream"), e);
                 }
             }
         }

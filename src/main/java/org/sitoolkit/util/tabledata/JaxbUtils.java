@@ -44,7 +44,7 @@ public class JaxbUtils {
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             URL resource = type.getResource(path);
 
-            LOG.info("XMLを読み込みます。{}", resource);
+            LOG.info(MessageManager.getMessage("xml.loading"), resource);
 
             return (T) unmarshaller.unmarshal(resource);
         } catch (JAXBException e) {

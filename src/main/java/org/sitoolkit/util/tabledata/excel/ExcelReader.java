@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.sitoolkit.util.tabledata.FileIOUtils;
+import org.sitoolkit.util.tabledata.MessageManager;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class ExcelReader {
                 try {
                     fis.close();
                 } catch (IOException e) {
-                    LOG.warn("ストリームのクローズで例外が発生しました。", e);
+                    LOG.warn(MessageManager.getMessage("exception.closingStream"), e);
                 }
             }
         }
@@ -46,7 +47,7 @@ public class ExcelReader {
 
     public TableData readSheet(Sheet sheet) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("シート[{}]を読み込みます。", sheet.getSheetName());
+            LOG.debug(MessageManager.getMessage("sheet.loading"), sheet.getSheetName());
         }
         Row headerRow = ExcelIOUtils.findHeaderRow(sheet);
         if (headerRow == null) {
@@ -64,7 +65,8 @@ public class ExcelReader {
             }
             tableData.add(readRow(schema, row));
         }
-        LOG.info("シート[{}]内の表データを{}行読み込みました。", sheet.getSheetName(), tableData.getRowCount());
+        LOG.info(MessageManager.getMessage("sheet.loaded"), sheet.getSheetName(),
+                tableData.getRowCount());
 
         return tableData;
     }
@@ -83,13 +85,14 @@ public class ExcelReader {
         for (Entry<String, Integer> entry : schema.entrySet()) {
             Cell cell = row.getCell(entry.getValue());
             if (cell == null) {
-                LOG.warn("存在しない列名が指定されました。{}", entry.getValue());
+                LOG.warn(MessageManager.getMessage("sheet.illgalcolumn"), entry.getValue());
             }
             rowData.setCellValue(entry.getKey(), ExcelIOUtils.retriveCellValue(cell));
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("{}行目を読み込みました。{}", row.getRowNum(), FileIOUtils.escapeReturn(rowData));
+            LOG.debug(MessageManager.getMessage("row.loaded"), row.getRowNum(),
+                    FileIOUtils.escapeReturn(rowData));
         }
 
         return rowData;

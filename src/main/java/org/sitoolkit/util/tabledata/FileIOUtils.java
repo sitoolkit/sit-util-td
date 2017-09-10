@@ -26,11 +26,11 @@ public class FileIOUtils {
     private static String cellSeparator = ",";
 
     /**
-     * CSVデータにおけるセル内改行による行分離の開始行であることを判定するパターン 「,"」を含む　または　「"」で始まる
+     * CSVデータにおけるセル内改行による行分離の開始行であることを判定するパターン 「,"」を含む または 「"」で始まる
      */
     private static final Pattern LINE_SEPARATE_START = Pattern.compile(".*,\"{1}.*|^\"{1}.*");
     /**
-     * CSVデータにおけるセル内改行による行分離の終了行であることを判定するパターン 「",」を含む　または　「"」で終わる または「,」で終わる
+     * CSVデータにおけるセル内改行による行分離の終了行であることを判定するパターン 「",」を含む または 「"」で終わる または「,」で終わる
      */
     private static final Pattern LINE_SEPARATE_END = Pattern.compile(".*\"{1},.+|.*\"{1}$|.*,$");
 
@@ -44,18 +44,18 @@ public class FileIOUtils {
     public static InputStream getInputStream(String path) throws IOException {
         if (path.startsWith("http://") || path.startsWith("https://")) {
             URL url = new URL(path);
-            LOG.info("ファイルを読み込みます {}", url);
+            LOG.info(MessageManager.getMessage("file.loading"), url);
             return url.openStream();
 
         } else if (path.startsWith("classpath:")) {
             String classpath = StringUtils.substringAfter(path, "classpath:");
             URL url = Thread.currentThread().getContextClassLoader().getResource(classpath);
-            LOG.info("ファイルを読み込みます {}", url);
+            LOG.info(MessageManager.getMessage("file.loading"), url);
             return url.openStream();
 
         } else {
             File file = new File(path);
-            LOG.info("ファイルを読み込みます {}", file.getAbsolutePath());
+            LOG.info(MessageManager.getMessage("file.loading"), file.getAbsolutePath());
 
             return new FileInputStream(path);
 
@@ -64,7 +64,7 @@ public class FileIOUtils {
 
     /**
      * CSV文字列をセル内改行を考慮して1行ずつに分離します。
-     * 
+     *
      * @param csvText
      *            CSV文字列
      * @return セル内改行を考慮した1行ずつを保持するList

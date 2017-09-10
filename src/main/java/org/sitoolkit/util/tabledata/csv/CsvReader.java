@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.sitoolkit.util.tabledata.FileIOUtils;
+import org.sitoolkit.util.tabledata.MessageManager;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
 import org.slf4j.Logger;
@@ -32,7 +33,6 @@ public class CsvReader {
             }
 
         } catch (IOException e) {
-            LOG.warn("CSVファイルの読み込みに失敗しました。");
             throw new IllegalStateException(e);
         }
 
@@ -40,16 +40,17 @@ public class CsvReader {
 
         // データヘッダをリストから除外し、schemaに設定
         Map<String, Integer> schema = retriveSchema(allLines.remove(0));
-        LOG.debug("ヘッダー行{}", schema);
+        LOG.debug(MessageManager.getMessage("header"), schema);
 
         for (int i = 0; i < allLines.size(); i++) {
             RowData row = readRow(schema, allLines.get(i));
             tableData.add(row);
 
-            LOG.debug("{}行目を読み込みました {}", i + 1, FileIOUtils.escapeReturn(row));
+            LOG.debug(MessageManager.getMessage("row.loaded"), i + 1,
+                    FileIOUtils.escapeReturn(row));
         }
 
-        LOG.info("CSVファイルのデータを{}行読み込みました。", tableData.getRowCount());
+        LOG.info(MessageManager.getMessage("csv.loaded"), tableData.getRowCount());
 
         return tableData;
     }

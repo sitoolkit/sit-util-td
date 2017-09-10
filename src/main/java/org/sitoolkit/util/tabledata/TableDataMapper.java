@@ -93,7 +93,7 @@ public class TableDataMapper {
     /**
      * 1行分のデータをSpring Beanの各プロパティに設定します。 行内の列とプロパティとの対応は、designDoc.xmlの定義に従います。
      * designDoc.xmlは、{@link #init() }で予め読み込まれている事が前提です。
-     * 
+     *
      * @param <T>
      *            Spring Beanの型
      * @param beanId
@@ -134,7 +134,7 @@ public class TableDataMapper {
 
     /**
      * 行データの指定された列の値を取得します。 値は、beanの対応するプロパティの型よって適宜変換されます。
-     * 
+     *
      * @param type
      *            プロパティをの型
      * @param row
@@ -164,7 +164,7 @@ public class TableDataMapper {
 
     @PostConstruct
     public void init() {
-        log.info("設計書定義を読み込みます。");
+        log.info(MessageManager.getMessage("tabledata.loadingDef"));
         Mapping mapping = JaxbUtils.res2obj(Mapping.class, getConfigFilePath());
 
         for (Table table : mapping.getTable()) {
@@ -172,13 +172,13 @@ public class TableDataMapper {
                 tableMap.put(id, table);
             }
         }
-        log.info("設計書定義を読み込みました。{}", tableMap);
+        log.info(MessageManager.getMessage("tabledata.loadedDef"), tableMap);
     }
 
     @PostConstruct
     public void initConverters() {
         if (log.isDebugEnabled()) {
-            log.debug("Commons BeanUtilsのコンバータを登録します。{}", getConverterMap());
+            log.debug(MessageManager.getMessage("beanutils.registerConverter"), getConverterMap());
         }
         ConvertUtilsBean convertUtils = new ConvertUtilsBean();
         for (Entry<Class<?>, ? extends Converter> entry : getConverterMap().entrySet()) {

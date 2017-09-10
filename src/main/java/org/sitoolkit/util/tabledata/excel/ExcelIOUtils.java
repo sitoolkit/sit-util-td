@@ -10,6 +10,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.sitoolkit.util.tabledata.MessageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ class ExcelIOUtils {
     /**
      * コーナーセルのパターン(正規表現)
      */
-    private static String cornerCellPattern = "項番|No\\.|#";
+    private static String cornerCellPattern = "No\\.|#";
 
     static Map<String, Integer> retriveSchema(Row headerRow) {
         Map<String, Integer> schema = new LinkedHashMap<String, Integer>();
@@ -31,7 +32,7 @@ class ExcelIOUtils {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("ヘッダー行{}", schema.toString().replace("\n", ""));
+            LOG.debug(MessageManager.getMessage("header"), schema.toString().replace("\n", ""));
         }
         return schema;
     }
@@ -53,7 +54,8 @@ class ExcelIOUtils {
                 case Cell.CELL_TYPE_NUMERIC:
                     if (CellDateFormat.isDateCell(cell)) {
                         Date date = cell.getDateCellValue();
-                        DateFormat dateFormat = CellDateFormat.getFormat(cell.getCellStyle().getDataFormat()).getDateFormat();
+                        DateFormat dateFormat = CellDateFormat
+                                .getFormat(cell.getCellStyle().getDataFormat()).getDateFormat();
                         cellValue = dateFormat.format(date);
                     } else {
                         cellValue = roundValue(cell.getNumericCellValue());
@@ -67,8 +69,8 @@ class ExcelIOUtils {
                     cellValue = cell.getStringCellValue();
             }
         } catch (Exception e) {
-            LOG.warn("セル({}, {})の値の取得が失敗しました。{}", cell.getRowIndex(), cell.getColumnIndex(),
-                    e.getMessage());
+            LOG.warn(MessageManager.getMessage("cell.fail"), cell.getRowIndex(),
+                    cell.getColumnIndex(), e.getMessage());
         }
 
         return cellValue;
@@ -102,7 +104,8 @@ class ExcelIOUtils {
      * @return
      */
     static Row findHeaderRow(Sheet sheet) {
-        LOG.debug("シート[{}]のヘッダー行を特定します。", sheet.getSheetName(), cornerCellPattern);
+        LOG.debug(MessageManager.getMessage("sheet.findingHeader"), sheet.getSheetName(),
+                cornerCellPattern);
         Row headerRow = null;
         final int firstRowNum = sheet.getFirstRowNum();
         final int lastRowNum = sheet.getLastRowNum();
@@ -119,13 +122,14 @@ class ExcelIOUtils {
             String cellValue = ExcelIOUtils.retriveCellValue(cell);
             if (cellValue.matches(cornerCellPattern)) {
                 headerRow = row;
-                LOG.debug("セル({}, {})に値[{}]が見つかりました。ヘッダー行は{}行目です。", new Object[] {
-                        cell.getRowIndex(), cell.getColumnIndex(), cellValue, row.getRowNum() });
+                LOG.debug(MessageManager.getMessage("sheet.foundHeader"), cell.getRowIndex(),
+                        cell.getColumnIndex(), row.getRowNum());
                 break;
             }
         }
         if (headerRow == null) {
-            LOG.warn("シート[{}]には、パターン[{}]に一致するセルが見つかりません。", sheet.getSheetName(), cornerCellPattern);
+            LOG.warn(MessageManager.getMessage("sheet.headerNotFound"), sheet.getSheetName(),
+                    cornerCellPattern);
         }
         return headerRow;
     }

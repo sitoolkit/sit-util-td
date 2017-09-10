@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.sitoolkit.util.tabledata.FileIOUtils;
+import org.sitoolkit.util.tabledata.MessageManager;
 import org.sitoolkit.util.tabledata.RowData;
 import org.sitoolkit.util.tabledata.TableData;
 import org.sitoolkit.util.tabledata.TableDataCatalog;
@@ -30,7 +31,7 @@ public class ExcelWriter {
     }
 
     private void writeSheet(Sheet sheet, TableData tableData) {
-        LOG.debug("シート[{}]に書き込みます。", sheet.getSheetName());
+        LOG.debug(MessageManager.getMessage("sheet.writing"), sheet.getSheetName());
         Row headerRow = ExcelIOUtils.findHeaderRow(sheet);
         Map<String, Integer> schema = ExcelIOUtils.retriveSchema(headerRow);
 
@@ -43,7 +44,8 @@ public class ExcelWriter {
     }
 
     private void writeRow(RowData rowData, Map<String, Integer> schema, Row row) {
-        LOG.debug("{}行目に書き込みます。{}", row.getRowNum(), FileIOUtils.escapeReturn(rowData));
+        LOG.debug(MessageManager.getMessage("row.writing"), row.getRowNum(),
+                FileIOUtils.escapeReturn(rowData));
         for (String columnName : schema.keySet()) {
             writeCellValue(rowData.getCellValue(columnName), schema, columnName, row);
         }
@@ -81,7 +83,7 @@ public class ExcelWriter {
 
     /**
      * 処理行の列名に対応するセルの値を設定する。
-     * 
+     *
      * @param column
      * @param value
      * @return
