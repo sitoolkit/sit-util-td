@@ -16,15 +16,19 @@
 
 package org.sitoolkit.util.tabledata;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.sitoolkit.util.tabledata.schema.Column;
 import org.sitoolkit.util.tabledata.schema.ReplacePattern;
+import org.sitoolkit.util.tabledata.schema.Table;
 
 /**
  *
@@ -225,6 +229,24 @@ public class TableDataMapperTest {
         tdm.map(bean, column, rowData);
         assertEquals(0, bean.getIntVal());
 
+    }
+
+    @Test
+    public void testLocalized() {
+        tdm.init();
+        Table table = tdm.getTableMap().get("testTable");
+        Column column = table.getColumn().get(0);
+
+        assertThat(column.getName(), is("プロパティ"));
+        assertThat(column.getPattern(), is("パターン"));
+
+        Locale.setDefault(Locale.US);
+        tdm.init();
+        table = tdm.getTableMap().get("testTable");
+        column = table.getColumn().get(0);
+
+        assertThat(column.getName(), is("property"));
+        assertThat(column.getPattern(), is("pattern"));
     }
 
     public class TestBean {

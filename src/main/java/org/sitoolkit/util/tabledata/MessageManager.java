@@ -14,7 +14,9 @@ public class MessageManager {
 
     private static ResourceBundle getResource() {
         if (resource == null) {
-            resource = ResourceBundle.getBundle("message");
+            String baseName = MessageManager.class.getPackage().getName().replace(".", "/")
+                    + "/message";
+            resource = ResourceBundle.getBundle(baseName);
         }
         return resource;
     }

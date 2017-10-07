@@ -17,6 +17,7 @@
 package org.sitoolkit.util.tabledata;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,6 +30,7 @@ import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitoolkit.util.tabledata.schema.Column;
+import org.sitoolkit.util.tabledata.schema.LocalizedProperty;
 import org.sitoolkit.util.tabledata.schema.Mapping;
 import org.sitoolkit.util.tabledata.schema.Table;
 import org.slf4j.Logger;
@@ -71,6 +73,7 @@ public class TableDataMapper {
                 continue;
             }
             try {
+
                 Object value = beanUtils.getProperty(bean, column.getProperty());
                 Class<?> propertyType = propertyUtils.getPropertyType(bean, column.getProperty());
                 if (ClassUtils.isAssignable(propertyType, Integer.class)) {
@@ -168,11 +171,33 @@ public class TableDataMapper {
         Mapping mapping = JaxbUtils.res2obj(Mapping.class, getConfigFilePath());
 
         for (Table table : mapping.getTable()) {
+
+            for (Column column : table.getColumn()) {
+                setLocalizedProperty(column);
+            }
+
             for (String id : table.getBeanId().split(",")) {
                 tableMap.put(id, table);
             }
         }
         log.info(MessageManager.getMessage("tabledata.loadedDef"), tableMap);
+    }
+
+    private void setLocalizedProperty(Column column) {
+        String localeStr = Locale.getDefault().toString();
+
+        for (LocalizedProperty localizedName : column.getLocalizedName()) {
+            if (localeStr.equalsIgnoreCase(localizedName.getLocale())) {
+                column.setName(localizedName.getValue());
+            }
+        }
+
+        for (LocalizedProperty localizedPattern : column.getLocalizedPattern()) {
+            if (localeStr.equalsIgnoreCase(localizedPattern.getLocale())) {
+                column.setPattern(localizedPattern.getValue());
+            }
+        }
+
     }
 
     @PostConstruct
@@ -209,5 +234,9 @@ public class TableDataMapper {
 
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
+    }
+
+    Map<String, Table> getTableMap() {
+        return tableMap;
     }
 }

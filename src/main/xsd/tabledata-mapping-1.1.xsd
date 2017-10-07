@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0" elementFormDefault="qualified"
+  targetNamespace="http://www.sitoolkit.org/schema/tabledata-mapping/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://www.sitoolkit.org/schema/tabledata-mapping/1.1">
+  <xs:complexType name="column">
+    <xs:sequence>
+      <xs:element name="replace" type="replacePattern" minOccurs="0" maxOccurs="unbounded"></xs:element>
+      <xs:element name="localizedName" type="localizedProperty" maxOccurs="unbounded"
+        minOccurs="0">
+      </xs:element>
+      <xs:element name="localizedPattern" type="localizedProperty" maxOccurs="unbounded"
+        minOccurs="0"></xs:element>
+    </xs:sequence>
+    <xs:attribute name="property" type="xs:string"></xs:attribute>
+    <xs:attribute name="name" type="xs:string"></xs:attribute>
+    <xs:attribute name="pattern" type="xs:string"></xs:attribute>
+    <xs:attribute name="trueStr" type="xs:string" default="○" />
+    <xs:attribute name="falseStr" type="xs:string" default="" />
+    <xs:attribute name="readOnly" type="xs:boolean"></xs:attribute>
+    <xs:attribute name="min" type="xs:int"></xs:attribute>
+    <xs:attribute name="excludeEmptyValue" type="xs:boolean" default="true">
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="table">
+    <xs:sequence>
+      <xs:element name="column" type="column" maxOccurs="unbounded" minOccurs="1">
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="beanId" type="xs:string"></xs:attribute>
+    <xs:attribute name="name" type="xs:string"></xs:attribute>
+    <xs:attribute name="cornerTop" type="xs:int"></xs:attribute>
+    <xs:attribute name="cornerLeft" type="xs:int"></xs:attribute>
+  </xs:complexType>
+
+
+  <xs:element name="mapping">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="table" type="table" maxOccurs="unbounded" minOccurs="0"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="replacePattern">
+    <xs:sequence>
+      <xs:element name="pattern" type="xs:string"></xs:element>
+      <xs:element name="replacement" type="xs:string"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+    <xs:complexType name="localizedProperty">
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+         <xs:attribute name="locale" type="xs:string"></xs:attribute>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+</xs:schema>
