@@ -184,7 +184,7 @@ public class TableDataMapper {
     }
 
     private void setLocalizedProperty(Column column) {
-        String localeStr = Locale.getDefault().toString();
+        String localeStr = Locale.getDefault().getLanguage().toString();
 
         for (LocalizedProperty localizedName : column.getLocalizedName()) {
             if (localeStr.equalsIgnoreCase(localizedName.getLocale())) {

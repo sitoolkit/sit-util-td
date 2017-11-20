@@ -23,8 +23,8 @@ limitations under the License.
 
     <table beanId="testTable" name="TestTable">
         <column property="prop" name="property" pattern="pattern">
-          <localizedName locale="ja_JP">プロパティ</localizedName>
-          <localizedPattern locale="ja_JP">パターン</localizedPattern>
+          <localizedName locale="ja">プロパティ</localizedName>
+          <localizedPattern locale="ja">パターン</localizedPattern>
         </column>
     </table>
 
