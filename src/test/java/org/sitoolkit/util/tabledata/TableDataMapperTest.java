@@ -237,6 +237,7 @@ public class TableDataMapperTest {
         Table table = tdm.getTableMap().get("testTable");
         Column column = table.getColumn().get(0);
 
+        Locale.setDefault(Locale.JAPANESE);
         assertThat(column.getName(), is("プロパティ"));
         assertThat(column.getPattern(), is("パターン"));
 
