@@ -25,8 +25,9 @@ public class MessageManager {
         try {
             return getResource().getString(key);
         } catch (MissingResourceException e) {
-            LOG.warn("{}", e.getMessage());
+            LOG.warn("{}, locale {}", e.getMessage(), getResource().getLocale());
         }
         return "!! messing resource !!";
     }
+
 }
