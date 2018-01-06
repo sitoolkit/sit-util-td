@@ -54,7 +54,7 @@ public abstract class InputSourceWatcher {
      *
      * @param cg
      *            繰り返し生成インターフェース
-     * @see #watchStart(org.sitoolkit.tabledata.ContinuousGeneratable)
+     * @see #watching(org.sitoolkit.tabledata.ContinuousGeneratable)
      */
     public void start(final ContinuousGeneratable cg) {
         if (!isContinue()) {
