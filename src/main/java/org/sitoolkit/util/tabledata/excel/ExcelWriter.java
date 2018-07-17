@@ -1,6 +1,8 @@
 package org.sitoolkit.util.tabledata.excel;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,11 +32,19 @@ public class ExcelWriter {
         return workbook;
     }
 
+
+
     private void writeSheet(Sheet sheet, TableData tableData) {
+
         LOG.debug(MessageManager.getMessage("sheet.writing"), sheet.getSheetName());
         Row headerRow = ExcelIOUtils.findHeaderRow(sheet);
-        Map<String, Integer> schema = ExcelIOUtils.retriveSchema(headerRow);
 
+        if (tableData.hasColumnNameList()) {
+            List<String> columnNameList = tableData.getColumnNameList();
+            writeHeaderRow(columnNameList, headerRow);
+        }
+
+        Map<String, Integer> schema = ExcelIOUtils.retriveSchema(headerRow);
         Row row = headerRow;
         for (RowData rowData : tableData.getRows()) {
             row = getNextRow(sheet, row);
@@ -42,6 +52,7 @@ public class ExcelWriter {
         }
 
     }
+
 
     private void writeRow(RowData rowData, Map<String, Integer> schema, Row row) {
         LOG.debug(MessageManager.getMessage("row.writing"), row.getRowNum(),
@@ -103,4 +114,18 @@ public class ExcelWriter {
         }
     }
 
+    private void writeHeaderRow(List<String> columnNameList, Row headerRow) {
+        if (columnNameList == null) {
+            return;
+        }
+
+        IntStream.range(0, columnNameList.size()).forEach(i -> {
+            Cell cell = headerRow.getCell(i, Row.CREATE_NULL_AS_BLANK);
+            String value = columnNameList.get(i);
+            if (value.contains("\n")) {
+                cell.getCellStyle().setWrapText(true);
+            }
+            cell.setCellValue(value);
+        });
+    }
 }

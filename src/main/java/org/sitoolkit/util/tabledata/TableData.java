@@ -33,6 +33,8 @@ public class TableData {
 
     private List<RowData> rows = new ArrayList<>();
 
+    private List<String> columnNameList;
+
     public List<RowData> getRows() {
         return rows;
     }
@@ -47,6 +49,18 @@ public class TableData {
 
     public void add(RowData rowData) {
         rows.add(rowData);
+    }
+
+    public List<String> getColumnNameList() {
+        return columnNameList;
+    }
+
+    public void setColumnNameList(List<String> columnNameList) {
+        this.columnNameList = columnNameList;
+    }
+
+    public boolean hasColumnNameList() {
+        return columnNameList != null && !columnNameList.isEmpty();
     }
 
     @Override
